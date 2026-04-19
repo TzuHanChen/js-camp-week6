@@ -8,8 +8,8 @@
 require("dotenv").config({ path: ".env" });
 
 // API 設定（從 .env 讀取）
-const API_PATH = process.env.API_PATH;
 const BASE_URL = "https://livejs-api.hexschool.io";
+const API_PATH = process.env.API_PATH;
 const ADMIN_TOKEN = process.env.API_KEY;
 
 // ========================================
@@ -27,6 +27,22 @@ async function getProducts() {
 	// 1. 使用 fetch() 發送 GET 請求
 	// 2. 使用 response.json() 解析回應
 	// 3. 回傳 data.products
+	try {
+		const response = await fetch(
+			`${BASE_URL}/api/livejs/v1/customer/${API_PATH}/products`
+		);
+		if (!response.ok) {
+			const errorData = await response.json().catch(() => ({}));
+			return {
+				success: false,
+				error: errorData.message || `連線失敗：${response.status}`
+			};
+		}
+		const data = await response.json();
+		return data.products;
+	} catch (error) {
+		return { success: false, error: error.message || '發生未知錯誤' };
+	}
 }
 
 /**
@@ -35,6 +51,22 @@ async function getProducts() {
  */
 async function getCart() {
 	// 請實作此函式
+	try {
+		const response = await fetch(
+			`${BASE_URL}/api/livejs/v1/customer/${API_PATH}/carts`
+		);
+		if (!response.ok) {
+			const errorData = await response.json().catch(() => ({}));
+			return {
+				success: false,
+				error: errorData.message || `連線失敗：${response.status}`
+			};
+		}
+		const data = await response.json();
+		return { carts: data.carts, total: data.total, finalTotal: data.finalTotal };
+	} catch (error) {
+		return { success: false, error: error.message || '發生未知錯誤' };
+	}
 }
 
 /**
@@ -48,6 +80,22 @@ async function getProductsSafe() {
 	// 2. 檢查 response.ok 判斷是否成功
 	// 3. 成功回傳 { success: true, data: [...] }
 	// 4. 失敗回傳 { success: false, error: '錯誤訊息' }
+	try {
+		const response = await fetch(
+			`${BASE_URL}/api/livejs/v1/customer/${API_PATH}/products`
+		);
+		if (!response.ok) {
+			const errorData = await response.json().catch(() => ({}));
+			return {
+				success: false,
+				error: errorData.message || `連線失敗：${response.status}`
+			};
+		}
+		const data = await response.json();
+		return { success: true, data: data.products };
+	} catch (error) {
+		return { success: false, error: error.message || '發生未知錯誤' };
+	}
 }
 
 // ========================================
@@ -67,6 +115,25 @@ async function addToCart(productId, quantity) {
 	// 2. body 格式：{ data: { productId: "xxx", quantity: 1 } }
 	// 3. 記得設定 headers: { 'Content-Type': 'application/json' }
 	// 4. body 要用 JSON.stringify() 轉換
+	try {
+		const response = await fetch(
+			`${BASE_URL}/api/livejs/v1/customer/${API_PATH}/carts`, {
+			headers: { 'Content-Type': 'application/json' },
+			method: 'POST',
+			body: JSON.stringify({ data: { productId, quantity } })
+		});
+		if (!response.ok) {
+			const errorData = await response.json().catch(() => ({}));
+			return {
+				success: false,
+				error: errorData.message || `連線失敗：${response.status}`
+			};
+		}
+		const data = await response.json();
+		return data;
+	} catch (error) {
+		return { success: false, error: error.message || '發生未知錯誤' };
+	}
 }
 
 /**
@@ -80,6 +147,25 @@ async function updateCartItem(cartId, quantity) {
 	// 提示：
 	// 1. 發送 PATCH 請求
 	// 2. body 格式：{ data: { id: "購物車ID", quantity: 數量 } }
+	try {
+		const response = await fetch(
+			`${BASE_URL}/api/livejs/v1/customer/${API_PATH}/carts`, {
+			headers: { 'Content-Type': 'application/json' },
+			method: 'PATCH',
+			body: JSON.stringify({ data: { id: cartId, quantity } })
+		});
+		if (!response.ok) {
+			const errorData = await response.json().catch(() => ({}));
+			return {
+				success: false,
+				error: errorData.message || `連線失敗：${response.status}`
+			};
+		}
+		const data = await response.json();
+		return data;
+	} catch (error) {
+		return { success: false, error: error.message || '發生未知錯誤' };
+	}
 }
 
 /**
@@ -90,6 +176,24 @@ async function updateCartItem(cartId, quantity) {
 async function removeCartItem(cartId) {
 	// 請實作此函式
 	// 提示：發送 DELETE 請求到 /carts/{id}
+	try {
+		const response = await fetch(
+			`${BASE_URL}/api/livejs/v1/customer/${API_PATH}/carts/${cartId}`, {
+			headers: { 'Content-Type': 'application/json' },
+			method: 'DELETE',
+		});
+		if (!response.ok) {
+			const errorData = await response.json().catch(() => ({}));
+			return {
+				success: false,
+				error: errorData.message || `連線失敗：${response.status}`
+			};
+		}
+		const data = await response.json();
+		return data;
+	} catch (error) {
+		return { success: false, error: error.message || '發生未知錯誤' };
+	}
 }
 
 /**
@@ -99,6 +203,24 @@ async function removeCartItem(cartId) {
 async function clearCart() {
 	// 請實作此函式
 	// 提示：發送 DELETE 請求到 /carts
+	try {
+		const response = await fetch(
+			`${BASE_URL}/api/livejs/v1/customer/${API_PATH}/carts`, {
+			headers: { 'Content-Type': 'application/json' },
+			method: 'DELETE',
+		});
+		if (!response.ok) {
+			const errorData = await response.json().catch(() => ({}));
+			return {
+				success: false,
+				error: errorData.message || `連線失敗：${response.status}`
+			};
+		}
+		const data = await response.json();
+		return data;
+	} catch (error) {
+		return { success: false, error: error.message || '發生未知錯誤' };
+	}
 }
 
 // ========================================
@@ -109,15 +231,24 @@ async function clearCart() {
 請回答以下問題（可以寫在這裡或另外繳交）：
 
 1. HTTP 狀態碼的分類（1xx, 2xx, 3xx, 4xx, 5xx 各代表什麼）
-   答：
+	 答：
+	 1xx 資訊回應
+	 2xx 成功回應
+	 3xx 重新導向
+	 4xx 用戶端錯誤
+	 5xx 伺服器端錯誤
 
 2. GET、POST、PATCH、PUT、DELETE 的差異
-   答：
+	 答：
+	 GET    取得資料
+	 POST   送出或新增資料
+	 PATCH  更新部分資料
+	 PUT    更新整個資料
+	 DELETE 刪除資料
 
 3. 什麼是 RESTful API？
-   答：
-
-
+	 答：
+	 一種 API 設計風格，用網址描述要存取的資源，用 HTTP 方法表達要執行的動作。
 */
 
 // ========================================
